@@ -47,7 +47,7 @@ class APIService {
       }
     }
     print(
-        "Request ${api.tokenUri()} failed\nResponse: ${response.statusCode} ${response.reasonPhrase}");
+        "Request ${api.endpointUri(endpoint)} failed\nResponse: ${response.statusCode} ${response.reasonPhrase}");
     throw response;
   }
 }
