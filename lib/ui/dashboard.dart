@@ -1,4 +1,5 @@
 import 'package:covid19nta/repository/data_repository.dart';
+import 'package:covid19nta/repository/endpoints_data.dart';
 import 'package:covid19nta/services/api.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,11 +13,7 @@ class Dashboard extends StatefulWidget {
 }
 
 class _DashboardState extends State<Dashboard> {
-  int _cases = 0;
-  int _casesSuspected = 0;
-  int _casesConfirmed = 0;
-  int _deaths = 0;
-  int _recovered = 0;
+  EndpointsData? _endpointsData;
 
   @override
   void initState() {
@@ -26,20 +23,10 @@ class _DashboardState extends State<Dashboard> {
 
   Future<void> _update() async {
     final dataRepository = Provider.of<DataRepository>(context, listen: false);
-    final cases = await dataRepository.getDataEndpoint(Endpoint.cases,
-        responseJsonKey: "cases");
-    final casesSuspected =
-        await dataRepository.getDataEndpoint(Endpoint.casesSuspected);
-    final casesConfirmed =
-        await dataRepository.getDataEndpoint(Endpoint.casesConfirmed);
-    final deaths = await dataRepository.getDataEndpoint(Endpoint.deaths);
-    final recovered = await dataRepository.getDataEndpoint(Endpoint.recovered);
+    final endpointsData = await dataRepository.getAllEndpointData();
+
     setState(() {
-      _cases = cases;
-      _casesSuspected = casesSuspected;
-      _casesConfirmed = casesConfirmed;
-      _deaths = deaths;
-      _recovered = recovered;
+      _endpointsData = endpointsData;
     });
   }
 
@@ -53,31 +40,14 @@ class _DashboardState extends State<Dashboard> {
         onRefresh: () => _update(),
         child: ListView(
           children: [
-            EndpointCard(
-              title: "Cases:",
-              endpoint: Endpoint.cases,
-              value: _cases,
-            ),
-            EndpointCard(
-              title: "Suspected:",
-              endpoint: Endpoint.casesSuspected,
-              value: _casesSuspected,
-            ),
-            EndpointCard(
-              title: "Confirmed:",
-              endpoint: Endpoint.casesConfirmed,
-              value: _casesConfirmed,
-            ),
-            EndpointCard(
-              title: "Deaths:",
-              endpoint: Endpoint.deaths,
-              value: _deaths,
-            ),
-            EndpointCard(
-              title: "Recovered",
-              endpoint: Endpoint.recovered,
-              value: _recovered,
-            ),
+            for (var endpoint in Endpoint.values)
+              EndpointCard(
+                endpoint: endpoint,
+                // ignore: unnecessary_null_comparison
+                value: _endpointsData != null
+                    ? _endpointsData!.values[endpoint]
+                    : 0,
+              ),
           ],
         ),
       ),

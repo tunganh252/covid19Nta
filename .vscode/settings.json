@@ -3,7 +3,7 @@
         "sandbox": {
             "baseUrl": "https://ncov2019-admin.firebaseapp.com",
             "authorization": "3efd719a62c9544e8f327fe72350c1e37040e3f6b69cf2e732df6effd6ca39e7",
-            "access_token": "2a3eed0db72645859eeef163ce216ccfa3f3d73162c8d14710a85ad2845309bc"
+            "access_token": "2bf423a3e524f8f27c5cd42b40a92ac39695a492c363572519b9c4ca39ad4cb9"
         },
         "production": {}
     }

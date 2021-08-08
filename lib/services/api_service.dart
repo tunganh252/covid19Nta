@@ -41,7 +41,7 @@ class APIService {
       if (data.isNotEmpty) {
         final Map<String, dynamic> endpointData = data[0];
         final int result = endpointData[responseJsonKey];
-        if (result != null) {
+        if (result >= 0) {
           return result;
         }
       }

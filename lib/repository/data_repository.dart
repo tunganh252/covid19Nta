@@ -11,20 +11,28 @@ class DataRepository {
   String _accessToken = "";
 
   Future<int> getDataEndpoint(Endpoint endpoint,
-      {String responseJsonKey = "data"}) async {
+          {String responseJsonKey = "data"}) async =>
+      await _getDataRefreshingToken<int>(
+          onGetData: () => apiService.getEndpointData(
+              accessToken: _accessToken,
+              endpoint: endpoint,
+              responseJsonKey: responseJsonKey));
+
+  Future<EndpointsData> getAllEndpointData() async =>
+      await _getDataRefreshingToken<EndpointsData>(
+          onGetData: _getAllEndpointData);
+
+  Future<T> _getDataRefreshingToken<T>(
+      {required Future<T> Function() onGetData}) async {
     try {
       if (_accessToken.isEmpty) {
         _accessToken = await apiService.getAccessToken();
       }
-      return await apiService.getEndpointData(
-          accessToken: _accessToken,
-          endpoint: endpoint,
-          responseJsonKey: responseJsonKey);
+      return await onGetData();
     } on Response catch (e) {
       if (e.statusCode == 401) {
         _accessToken = await apiService.getAccessToken();
-        return await apiService.getEndpointData(
-            accessToken: _accessToken, endpoint: endpoint);
+        return await onGetData();
       }
       rethrow;
     }
