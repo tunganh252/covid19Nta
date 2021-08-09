@@ -41,7 +41,7 @@ class EndpointCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(cardData!.title,
-                  style: Theme.of(context).textTheme.headline5),
+                  style: TextStyle(color: cardData.color, fontSize: 28.0)),
               SizedBox(
                 height: 10,
               ),
@@ -56,7 +56,7 @@ class EndpointCard extends StatelessWidget {
                     ),
                     Text(
                       value! >= 0 ? value.toString() : '',
-                      style: Theme.of(context).textTheme.headline5,
+                      style: TextStyle(color: cardData.color, fontSize: 24.0),
                     )
                   ],
                 ),

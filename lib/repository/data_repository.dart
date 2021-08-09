@@ -1,6 +1,7 @@
-import 'package:covid19nta/repository/endpoints_data.dart';
+import 'package:covid19nta/repository/list_endpoints_data.dart';
 import 'package:covid19nta/services/api.dart';
 import 'package:covid19nta/services/api_service.dart';
+import 'package:covid19nta/services/endpoint_data.dart';
 import 'package:http/http.dart';
 
 class DataRepository {
@@ -10,16 +11,16 @@ class DataRepository {
 
   String _accessToken = "";
 
-  Future<int> getDataEndpoint(Endpoint endpoint,
+  Future<EndpointData> getDataEndpoint(Endpoint endpoint,
           {String responseJsonKey = "data"}) async =>
-      await _getDataRefreshingToken<int>(
+      await _getDataRefreshingToken<EndpointData>(
           onGetData: () => apiService.getEndpointData(
               accessToken: _accessToken,
               endpoint: endpoint,
               responseJsonKey: responseJsonKey));
 
-  Future<EndpointsData> getAllEndpointData() async =>
-      await _getDataRefreshingToken<EndpointsData>(
+  Future<ListEndpointsData> getAllEndpointData() async =>
+      await _getDataRefreshingToken<ListEndpointsData>(
           onGetData: _getAllEndpointData);
 
   Future<T> _getDataRefreshingToken<T>(
@@ -38,7 +39,7 @@ class DataRepository {
     }
   }
 
-  Future<EndpointsData> _getAllEndpointData() async {
+  Future<ListEndpointsData> _getAllEndpointData() async {
     final values = await Future.wait([
       apiService.getEndpointData(
           accessToken: _accessToken,
@@ -54,7 +55,7 @@ class DataRepository {
           accessToken: _accessToken, endpoint: Endpoint.recovered),
     ]);
 
-    return EndpointsData(values: {
+    return ListEndpointsData(values: {
       Endpoint.cases: values[0],
       Endpoint.casesSuspected: values[1],
       Endpoint.casesConfirmed: values[2],
