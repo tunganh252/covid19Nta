@@ -3,9 +3,13 @@ import 'package:covid19nta/services/api.dart';
 import 'package:covid19nta/services/api_service.dart';
 import 'package:covid19nta/ui/dashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+void main() async {
+  Intl.defaultLocale = 'vi_VN';
+  await initializeDateFormatting();
   runApp(MyApp());
 }
 

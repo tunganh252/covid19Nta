@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:covid19nta/repository/data_repository.dart';
 import 'package:covid19nta/repository/list_endpoints_data.dart';
 import 'package:covid19nta/services/api.dart';
+import 'package:covid19nta/ui/show_alert_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'enpoint_card.dart';
@@ -23,16 +26,29 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Future<void> _update() async {
-    final dataRepository = Provider.of<DataRepository>(context, listen: false);
-    final endpointsData = await dataRepository.getAllEndpointData();
-
-    setState(() {
-      _listEndpointsData = endpointsData;
-    });
+    try {
+      final dataRepository =
+          Provider.of<DataRepository>(context, listen: false);
+      final endpointsData = await dataRepository.getAllEndpointData();
+      setState(() {
+        _listEndpointsData = endpointsData;
+      });
+    } on SocketException catch (_) {
+      showAlertDialog(
+          context: context,
+          title: "Connection Error",
+          content: "Could not retrive data. Please try again!",
+          defaultActionText: "OK");
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final formatter = LastUpdatedDateFormatter(
+        lastUpdate: _listEndpointsData != null
+            ? _listEndpointsData!.values[Endpoint.cases]!.dateTime
+            : null);
+
     return Scaffold(
       appBar: AppBar(
         title: Text("Coronavirus Tracker"),
@@ -42,11 +58,7 @@ class _DashboardState extends State<Dashboard> {
         child: ListView(
           children: [
             LastUpdateStatusText(
-              text: _listEndpointsData != null
-                  ? _listEndpointsData!.values[Endpoint.cases]!.dateTime
-                          ?.toString() ??
-                      ''
-                  : "hello",
+              text: formatter.lastUpdateStatusText(),
             ),
             for (var endpoint in Endpoint.values)
               EndpointCard(
