@@ -1,13 +1,15 @@
 import 'package:covid19nta/repository/list_endpoints_data.dart';
 import 'package:covid19nta/services/api.dart';
 import 'package:covid19nta/services/api_service.dart';
+import 'package:covid19nta/services/data_cache_service.dart';
 import 'package:covid19nta/services/endpoint_data.dart';
 import 'package:http/http.dart';
 
 class DataRepository {
-  DataRepository({required this.apiService});
+  DataRepository({required this.apiService, required this.dataCacheService});
 
   final APIService apiService;
+  final DataCacheService dataCacheService;
 
   String _accessToken = "";
 
@@ -19,9 +21,14 @@ class DataRepository {
               endpoint: endpoint,
               responseJsonKey: responseJsonKey));
 
-  Future<ListEndpointsData> getAllEndpointData() async =>
-      await _getDataRefreshingToken<ListEndpointsData>(
-          onGetData: _getAllEndpointData);
+  ListEndpointsData getAllEndpointCacheData() => dataCacheService.getData();
+
+  Future<ListEndpointsData> getAllEndpointData() async {
+    final dataGetAll = await _getDataRefreshingToken<ListEndpointsData>(
+        onGetData: _getAllEndpointData);
+    await dataCacheService.setData(dataGetAll);
+    return dataGetAll;
+  }
 
   Future<T> _getDataRefreshingToken<T>(
       {required Future<T> Function() onGetData}) async {

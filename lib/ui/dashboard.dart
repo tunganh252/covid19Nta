@@ -22,6 +22,8 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
+    final dataRepository = Provider.of<DataRepository>(context, listen: false);
+    _listEndpointsData = dataRepository.getAllEndpointCacheData();
     _update();
   }
 
@@ -39,6 +41,12 @@ class _DashboardState extends State<Dashboard> {
           title: "Connection Error",
           content: "Could not retrive data. Please try again!",
           defaultActionText: "OK");
+    } catch (_) {
+      showAlertDialog(
+          context: context,
+          title: "Unknow Error",
+          content: "Please contact support or try again later.",
+          defaultActionText: "OK");
     }
   }
 
@@ -46,7 +54,7 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     final formatter = LastUpdatedDateFormatter(
         lastUpdate: _listEndpointsData != null
-            ? _listEndpointsData!.values[Endpoint.cases]!.dateTime
+            ? _listEndpointsData!.values[Endpoint.cases]?.dateTime
             : null);
 
     return Scaffold(
@@ -65,7 +73,7 @@ class _DashboardState extends State<Dashboard> {
                 endpoint: endpoint,
                 // ignore: unnecessary_null_comparison
                 value: _listEndpointsData != null
-                    ? _listEndpointsData!.values[endpoint]!.value
+                    ? _listEndpointsData!.values[endpoint]?.value
                     : 0,
               ),
           ],
